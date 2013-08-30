@@ -5,42 +5,19 @@ import java.util.List;
 import org.eclipse.jgit.diff.DiffEntry;
 
 import com.wbf.git.service.GitService;
+import com.wbf.git.service.GitService_1;
 
 import junit.framework.TestCase;
 
 public class GitTest extends TestCase
-{
-	public void testListDirEntry() throws Exception
-	{
-		String revision = "d7002489eb4c2a2073cee1ea2119f697ef607c80";
-		String gitRoot = "D:/MyEclipse_Space/git_project";
-		String filePath = "src/com/wbf/git/dto";
-		
-		GitService.listDirEntry(gitRoot, filePath, revision);
-	}
-	
+{	
 	public void testGetLog() throws Exception
 	{
-		String startRevision = "4937b6fd88b31bad2c4efa8e38daa915f76d6c22";
-		String untilRevision = "ede6dcdeddc9de83f6ac9912f93d6f4f4ad5062e";
-		String gitRoot = "D:/MyEclipse_Space/git_project/.git";
-		String filePath = "src/com/wbf/git/dto/GitDiffStatusDto.java";
+		String gitRoot = "D:/MyEclipse_Space/git_project";
+		String untilRev = "32906bcc2b65301647902d1f0c20f0be0777e4da";
+		String startRev = "afb3add42ddead3e40847ecad06d533a96076c58";
+		String branchName = "master";
 		
-		//GitService.getLog(gitRoot, startRevision, untilRevision, filePath);
-		//GitService.getLog(gitRoot, startRevision, untilRevision, null);
-		//GitService.getSpecificLog(gitRoot, untilRevision, filePath);
-		GitService.getLogDtoList(gitRoot, filePath);
-	}
-	
-	public void testRepoBrowser() throws Exception
-	{
-		//String gitRoot = "D:/MyEclipse_Space/git_project/.git";
-		String gitRoot = "https://github.com/czw200809/repo_git.git";
-		GitService.repoBrowser(gitRoot);
-	}
-	
-	public void testCloneRemoteRepository() throws Exception
-	{
-		GitService.cloneRemoteRepository();
+		GitService.getLog(gitRoot, branchName, startRev, untilRev);
 	}
 }
