@@ -573,7 +573,6 @@ public class GitService
     	ccmd.setCloneAllBranches(true);
     	ccmd.call();
     	
-    	
     	Repository repo = ccmd.getRepository();
     }
     
