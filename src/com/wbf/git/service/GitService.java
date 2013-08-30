@@ -567,12 +567,12 @@ public class GitService
     
     public static void cloneRemoteRepository() throws Exception
     {
-    	//Git git = Git.cloneRepository().setURI("https://github.com/czw200809/repo_git.git").call();
     	CloneCommand ccmd = Git.cloneRepository();
     	ccmd.setDirectory(new File("d:/ABC"));
     	ccmd.setURI("git@github.com:czw200809/git_repo.git");
     	ccmd.setCloneAllBranches(true);
     	ccmd.call();
+    	
     	
     	Repository repo = ccmd.getRepository();
     }
