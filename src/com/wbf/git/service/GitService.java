@@ -564,7 +564,7 @@ public class GitService
     	return rstDtoList;
     }
     
-    
+    //cloneRemoteRepository
     public static void cloneRemoteRepository() throws Exception
     {
     	CloneCommand ccmd = Git.cloneRepository();
