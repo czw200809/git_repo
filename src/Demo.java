@@ -17,7 +17,7 @@ public class Demo {
 			Git r = Git.cloneRepository().setDirectory(tmpDir).setURI(
 					"git@github.com:czw200809/git_repo.git")
 					.setProgressMonitor(new TextProgressMonitor()).call();
-			r.checkout().setName("origin/test").call();
+			r.checkout().setName("origin/master").call();
 			for (Ref f : r.branchList().setListMode(ListMode.ALL).call()) {
 				r.checkout().setName(f.getName()).call();
 				System.out.println("checked out branch " + f.getName()
@@ -25,9 +25,9 @@ public class Demo {
 			}
 			// try to checkout branches by specifying abbreviated names
 			r.checkout().setName("master").call();
-			r.checkout().setName("origin/test").call();
+			r.checkout().setName("origin/master").call();
 			try {
-				r.checkout().setName("test").call();
+				r.checkout().setName("master").call();
 			} catch (RefNotFoundException e) {
 				System.err.println("couldn't checkout 'test'. Got exception: "
 						+ e.toString() + ". HEAD: "
