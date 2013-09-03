@@ -48,8 +48,8 @@ public class GitTest extends TestCase
 	{
 		String gitRoot = "D:\\Eclipse_Workspace\\git_project";
 		String rev1 = "f08aaae06dae27ccebc1421984c9a42ae65f3e5e";//HEAD
-		String rev2 = "e46efed680788edaa472b31da2896d37c2ec60eb";//
-		String filePath = "test/com/wbf/git/GitTest.java";
+		String rev2 = "e46efed680788edaa472b31da2896d37c2ec60eb";//aaa
+		String filePath = "test/com/wbf/git/GitTest.java";//bbb
 		String branchName = "b1";
 		GitService.getDiff(gitRoot, branchName, filePath);
 		//GitService.getDiff(gitRoot);
