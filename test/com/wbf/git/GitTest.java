@@ -16,10 +16,4 @@ public class GitTest extends TestCase
 		
 		GitService.getLog(gitRoot, branchName, startRev, untilRev);
 	}
-	
-	public void testOpenRemoteRepo() throws Exception
-	{
-		String gitRoot = "git@github.com:czw200809/git_repo.git";
-		GitService.openRemoteRepo(gitRoot);
-	}
 }
