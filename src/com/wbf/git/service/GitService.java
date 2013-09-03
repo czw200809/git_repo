@@ -3,6 +3,7 @@ package com.wbf.git.service;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,8 +34,6 @@ import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -52,8 +51,8 @@ public class GitService
 	private final static String HEAD = "HEAD";
     private final static String REF_REMOTES = "refs/remotes/origin/";  
 	
-    //获取指定分支的log
-    public static List<GitLogDto> getLog(String gitRoot, String branchName) throws Exception
+    //获取指定分支(且指定目录)的所有log
+    public static List<GitLogDto> getLog(String gitRoot, String branchName, String filePath) throws Exception
     {
     	File rootDir = new File(gitRoot);  
 		
@@ -67,7 +66,11 @@ public class GitService
         Repository repo = git.getRepository();
         ObjectId objId = repo.resolve(branchName);
         
-        Iterable<RevCommit> revCommits = git.log().add(objId).call();
+        Iterable<RevCommit> revCommits = null;
+        if (filePath == null)
+        	revCommits = git.log().add(objId).call();
+        else
+        	revCommits = git.log().addPath(filePath).add(objId).call();
         if (revCommits != null)
         {
         	logDtoList = new ArrayList<GitLogDto>();
@@ -85,8 +88,52 @@ public class GitService
     	return logDtoList;
     }
     
-    //获取某分支在rev1-rev2之间的log
-	public static List<GitLogDto> getLog(String gitRoot, String startRev, String untilRev, String filePath) throws Exception 
+    //获取指定分支在某个时间段内的log
+    public static List<GitLogDto> getLog(String gitRoot, String branchName, Date startDate, Date untilDate, String filePath) throws Exception
+    {
+        List<GitLogDto> logDtoList = getLog(gitRoot, branchName, filePath);
+        
+        for (Iterator<GitLogDto> iter = logDtoList.iterator();iter.hasNext();)
+        {
+        	GitLogDto logDto = iter.next();
+        	Date d = logDto.commitDate;
+        	long time = d.getTime();
+        	if (time < startDate.getTime() || time > untilDate.getTime())
+        	{
+        		iter.remove();
+        	}
+        }
+        
+    	return logDtoList;
+    }
+    
+    //获取指定分支在startRev-untilRev之间的版本
+    public static List<GitLogDto> getLog(String gitRoot, String branchName, String startRev, String untilRev, String filePath) throws Exception
+    {
+    	File rootDir = new File(gitRoot);  
+		
+        if (new File(gitRoot + File.separator + GIT).exists() == false) {  
+            Git.init().setDirectory(rootDir).call();  
+        }  
+        
+        List<GitLogDto> logDtoList = null;
+        Git git = Git.open(rootDir);
+        
+        Repository repo = git.getRepository();
+        RevWalk revWalk = new RevWalk(repo);
+        ObjectId startObjId = repo.resolve(startRev);
+        ObjectId untilObjId = repo.resolve(untilRev);
+        RevCommit rev1 = revWalk.parseCommit(startObjId);
+        RevCommit rev2 = revWalk.parseCommit(untilObjId);
+        Date startDate = rev1.getCommitterIdent().getWhen();
+        Date untilDate = rev2.getCommitterIdent().getWhen();
+        
+        logDtoList = getLog(gitRoot, branchName, startDate, untilDate, filePath);
+        
+    	return logDtoList;
+    }
+    
+	/*public static List<GitLogDto> getLog(String gitRoot, String startRev, String untilRev, String filePath) throws Exception 
 	{
 		File rootDir = new File(gitRoot);  
 		
@@ -128,7 +175,7 @@ public class GitService
         }
         
 		return logDtoList;
-	}
+	}*/
 	
 	//获取指定版本的log信息/指定File且指定版本的log
 	public static GitLogDto getSpecificLog(String gitRoot, String revision, String filePath) throws Exception

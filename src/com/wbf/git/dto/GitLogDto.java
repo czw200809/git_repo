@@ -22,7 +22,7 @@ public class GitLogDto {
    {
 	   if (commit != null)
 	   {
-		   revision = commit.getName();
+		   revision = commit.getName().substring(0, 7);//去前七个字符足以
 		   author = commit.getAuthorIdent().getName();
 		   modifyDate = commit.getAuthorIdent().getWhen();
 		   committer = commit.getCommitterIdent().getName();
