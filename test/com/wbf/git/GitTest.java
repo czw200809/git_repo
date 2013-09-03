@@ -16,7 +16,6 @@ public class GitTest extends TestCase
 		String filePath = "src/Demo.java";
 		
 		GitService.getLog(gitRoot, branchName, filePath);
-		
 	}
 	
 	public void testGetLog1() throws Exception
@@ -45,8 +44,13 @@ public class GitTest extends TestCase
 		GitService.getLog(gitRoot, branchName, startRev, untilRev, null);
 	}
 	
-	public void testPrint() throws Exception
+	public void testGetDiff() throws Exception
 	{
-		GitService.print();
+		String gitRoot = "D:\\Eclipse_Workspace\\git_project";
+		String rev1 = "14b1288ba91de192bc9187ea9485f0040ae58569";//ss_b1
+		String rev2 = "e46efed680788edaa472b31da2896d37c2ec60eb";//head
+		String filePath = "test/com/wbf/git/GitTest.java";
+		GitService.getDiff(gitRoot, rev1, rev2, filePath);
 	}
+	
 }

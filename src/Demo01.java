@@ -49,10 +49,8 @@ public class Demo01 {
 	        }
 
 		} finally {
-			del(new File(str + dir));
+			del(tmpDir);
 		}
-		
-		del(new File(str + dir));
 	}
 
 	public static void del(File file)

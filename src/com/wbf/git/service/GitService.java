@@ -2,6 +2,7 @@ package com.wbf.git.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.dircache.DirCache;
@@ -41,6 +43,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import com.wbf.git.dto.GitDiffStatusDto;
 import com.wbf.git.dto.GitDirEntryDto;
@@ -50,56 +53,7 @@ public class GitService
 {	
 	private final static String GIT = ".git";
 	private final static String HEAD = "HEAD";
-    private final static String REF_REMOTES = "refs/remotes/origin/";  
-	
-    
-    public static void print() throws Exception
-    {
-    	String dir = "tmp" + System.currentTimeMillis();
-		String str = System.getProperty("java.io.tmpdir");
-		File tmpDir = new File(System.getProperty("java.io.tmpdir"), dir);
-		
-		tmpDir.mkdirs();
-		
-		try {
-			Git git = Git.cloneRepository().setBare(true).setBranch("master").setDirectory(tmpDir).setURI(
-					"D:/MyEclipse_Space/git_project/.git")
-					.setProgressMonitor(new TextProgressMonitor()).call();
-	        
-	        Repository repo = git.getRepository();
-	        ObjectId objId = repo.resolve("master");
-	        
-	        Iterable<RevCommit> revCommits = revCommits = git.log().add(objId).call();
-	       
-	        if (revCommits != null)
-	        {
-	        	RevCommit revCommit = null;
-	        	for (Iterator<RevCommit> iter = revCommits.iterator(); iter.hasNext();)
-	        	{
-	        		revCommit = iter.next();
-	        		System.out.println(revCommit.getFullMessage());
-	        	}
-	        }
-
-		} finally {
-			
-			del(tmpDir);
-		}
-    }
-    
-    public static void del(File file)
-	{
-		if (file.isDirectory())
-		{
-			File[] files = file.listFiles();
-			for (int i = 0; i < files.length; i++)
-			{
-				del(files[i]);
-			}
-		}
-		
-		file.delete();
-	}
+    private final static String REF_REMOTES = "refs/remotes/origin/";
     
     //获取指定分支(且指定目录)的所有log
     public static List<GitLogDto> getLog(String gitRoot, String branchName, String filePath) throws Exception
@@ -276,8 +230,42 @@ public class GitService
 		return rstList;
 	}
 	
+	/*public static String getDiff(String gitRoot) throws Exception
+	{
+		File rootDir = new File(gitRoot);  
+        if (new File(gitRoot + File.separator + GIT).exists() == false) {  
+            Git.init().setDirectory(rootDir).call();  
+        }  
+        
+        Git git = Git.open(rootDir);
+        Repository repository = git.getRepository();
+        
+        RevWalk rw = new RevWalk(repository);
+        ObjectId head = repository.resolve(Constants.HEAD);
+        RevCommit commit = rw.parseCommit(head);
+        RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();  
+	    DiffFormatter df = new DiffFormatter(out); 
+        df.setRepository(repository);
+        df.setDiffComparator(RawTextComparator.DEFAULT);
+        df.setDetectRenames(true);
+        List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
+        
+        String diffText = null;
+        for (DiffEntry diff : diffs) {
+        	df.format(diff);
+        	diffText = out.toString("utf-8");
+        	System.out.println(diffText);
+            System.out.println(MessageFormat.format("({0} {1} {2}", diff.getChangeType().name(), diff.getNewMode().getBits(), diff.getNewPath()));
+        }
+        
+		return null;
+	}*/
+	
+	
 	//获取指定文件在两个版本之间的diff
-	public static String getDiff(String gitRoot, String revision1, String revision2, String filePath) throws Exception
+	public static void getDiff(String gitRoot, String rev1, String rev2, String filePath) throws Exception
 	{
 		File rootDir = new File(gitRoot);  
         if (new File(gitRoot + File.separator + GIT).exists() == false) {  
@@ -290,11 +278,11 @@ public class GitService
         ObjectReader reader = repository.newObjectReader();  
 		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();  
 
-		ObjectId old = repository.resolve(revision1 + "^{tree}");  
-		ObjectId head = repository.resolve(revision2+"^{tree}");  
-		oldTreeIter.reset(reader, old);  
+		ObjectId old_objId = repository.resolve(rev1 + "^{tree}");  
+		ObjectId new_objId2 = repository.resolve(rev2+"^{tree}");  
+		oldTreeIter.reset(reader, old_objId);  
 		CanonicalTreeParser newTreeIter = new CanonicalTreeParser();  
-		newTreeIter.reset(reader, head);  
+		newTreeIter.reset(reader, new_objId2);  
 		
 		List<DiffEntry> diffs = null;
 		if (filePath != null)
@@ -306,16 +294,19 @@ public class GitService
 		}
         
 		String diffText = null;
+		ByteArrayOutputStream out = new ByteArrayOutputStream();  
+		DiffFormatter df = new DiffFormatter(out);  
 		if (diffs != null && diffs.size() > 0)
 		{	
-			ByteArrayOutputStream out = new ByteArrayOutputStream();  
-		    DiffFormatter df = new DiffFormatter(out);  
-		    df.setRepository(git.getRepository());  
-		    df.format(diffs.get(0));
-		    diffText = out.toString("gb2312");
+			for (DiffEntry diff : diffs)
+			{
+				df.setRepository(git.getRepository());  
+			    df.format(diff);
+			    diffText = out.toString("utf-8");
+			    System.out.println(diffText);
+			    System.out.println(MessageFormat.format("({0} {1} {2}", diff.getChangeType().name(), diff.getNewMode().getBits(), diff.getNewPath()));
+			}
 		}
-		
-		return diffText;
 	}
 	
 	//某个文件指定版本的内容
