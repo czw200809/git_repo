@@ -12,7 +12,7 @@ public class GitTest extends TestCase
 		String untilRev = "a775906e5eef4d9f974a7ccce6fdb98568d19769";// b1 new
 		//String untilRev = "8390295535b0eeb002e5f84ede9b2d960bc5d66b";//fourth
 		String startRev = "afb3add42ddead3e40847ecad06d533a96076c58";//first
-		String branchName = "b1";
+		String branchName = "master";
 		
 		//GitService.getLog(gitRoot, startRev, untilRev, null);
 		GitService.getLog(gitRoot, branchName);

@@ -85,8 +85,7 @@ public class GitService
     	return logDtoList;
     }
     
-    //获取某个文件或所有文件，从版本startRevision至untilRevision的log
-    //如果untilRevision == null, 则untilRevision = "HEAD"
+    //获取某分支在rev1-rev2之间的log
 	public static List<GitLogDto> getLog(String gitRoot, String startRev, String untilRev, String filePath) throws Exception 
 	{
 		File rootDir = new File(gitRoot);  
