@@ -52,9 +52,42 @@ public class GitService
 	private final static String HEAD = "HEAD";
     private final static String REF_REMOTES = "refs/remotes/origin/";  
 	
-  //获取某个文件或所有文件，从版本startRevision至untilRevision的log
+    //获取指定分支的log
+    public static List<GitLogDto> getLog(String gitRoot, String branchName) throws Exception
+    {
+    	File rootDir = new File(gitRoot);  
+		
+        if (new File(gitRoot + File.separator + GIT).exists() == false) {  
+            Git.init().setDirectory(rootDir).call();  
+        }  
+        
+        List<GitLogDto> logDtoList = null;
+        Git git = Git.open(rootDir);
+        
+        Repository repo = git.getRepository();
+        ObjectId objId = repo.resolve(branchName);
+        
+        Iterable<RevCommit> revCommits = git.log().add(objId).call();
+        if (revCommits != null)
+        {
+        	logDtoList = new ArrayList<GitLogDto>();
+        	RevCommit revCommit = null;
+        	GitLogDto logDto = null;
+        	for (Iterator<RevCommit> iter = revCommits.iterator(); iter.hasNext();)
+        	{
+        		revCommit = iter.next();
+        		logDto = new GitLogDto(revCommit);
+        		logDtoList.add(logDto);
+        	}
+        	
+        }
+
+    	return logDtoList;
+    }
+    
+    //获取某个文件或所有文件，从版本startRevision至untilRevision的log
     //如果untilRevision == null, 则untilRevision = "HEAD"
-	public static List<GitLogDto> getLog(String gitRoot, String startRevision, String untilRevision, String filePath) throws Exception 
+	public static List<GitLogDto> getLog(String gitRoot, String startRev, String untilRev, String filePath) throws Exception 
 	{
 		File rootDir = new File(gitRoot);  
 		
@@ -65,12 +98,11 @@ public class GitService
         List<GitLogDto> logDtoList = null;
         Git git = Git.open(rootDir);
         
-        git.checkout().setName("b1").call();
         Repository repo = git.getRepository();
-        ObjectId startObjId = repo.resolve(startRevision);
+        ObjectId startObjId = repo.resolve(startRev);
         ObjectId untilObjId = null;
-        if (untilRevision != null)
-        	untilObjId = repo.resolve(untilRevision);
+        if (untilRev != null)
+        	untilObjId = repo.resolve(untilRev);
         else
         	untilObjId = repo.resolve(HEAD);
         Iterable<RevCommit> revCommits = null;
@@ -92,7 +124,7 @@ public class GitService
         	}
         	
         	//获取startRevision这个版本的log,因为前面的范围中是不包括startRevision这个版本
-        	logDto = getSpecificLog(gitRoot, startRevision, filePath);
+        	logDto = getSpecificLog(gitRoot, startRev, filePath);
         	logDtoList.add(logDto);
         }
         

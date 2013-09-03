@@ -14,7 +14,7 @@ public class Demo {
 		tmpDir.mkdirs();
 		
 		try {
-			Git r = Git.cloneRepository().setDirectory(tmpDir).setURI(
+			Git r = Git.cloneRepository().setBare(true).setBranch("master").setDirectory(tmpDir).setURI(
 					"git@github.com:czw200809/git_repo.git")
 					.setProgressMonitor(new TextProgressMonitor()).call();
 			r.checkout().setName("origin/master").call();
