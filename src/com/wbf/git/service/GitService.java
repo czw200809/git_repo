@@ -265,14 +265,10 @@ public class GitService
 		return rstList;
 	}
 	
-	/*public static String getDiff(String gitRoot) throws Exception
+	public static String getDiff(String gitRoot, String branchName, String filePath) throws Exception
 	{
-		File rootDir = new File(gitRoot);  
-        if (new File(gitRoot + File.separator + GIT).exists() == false) {  
-            Git.init().setDirectory(rootDir).call();  
-        }  
-        
-        Git git = Git.open(rootDir);
+		Map<String, Object> rstMap = getGit(gitRoot, branchName);
+        Git git = (Git)rstMap.get("git");
         Repository repository = git.getRepository();
         
         RevWalk rw = new RevWalk(repository);
@@ -283,6 +279,7 @@ public class GitService
         ByteArrayOutputStream out = new ByteArrayOutputStream();  
 	    DiffFormatter df = new DiffFormatter(out); 
         df.setRepository(repository);
+        df.setPathFilter(PathFilter.create(filePath));
         df.setDiffComparator(RawTextComparator.DEFAULT);
         df.setDetectRenames(true);
         List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
@@ -295,25 +292,42 @@ public class GitService
             System.out.println(MessageFormat.format("({0} {1} {2}", diff.getChangeType().name(), diff.getNewMode().getBits(), diff.getNewPath()));
         }
         
+        del(new File((String)rstMap.get("dirStr")));
+        
 		return null;
-	}*/
+	}
 	
 	
 	//获取指定文件在两个版本之间的diff
-	public static void getDiff(String gitRoot, String branchName, String rev1, String rev2, String filePath) throws Exception
+	/*public static void getDiff(String gitRoot, String branchName, String rev1, String rev2, String filePath) throws Exception
 	{   
 		Map<String, Object> rstMap = getGit(gitRoot, branchName);
         Git git = (Git)rstMap.get("git");
         Repository repository = git.getRepository();
         
         ObjectReader reader = repository.newObjectReader();  
-		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();  
+		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
 
-		ObjectId old_objId = repository.resolve("HEAD" + "^{tree}");  
-		ObjectId new_objId2 = repository.resolve(rev2+"^{tree}");  
+		ObjectId old_objId = null;
+		ObjectId new_objId = null;
+		if (rev1 != null && rev2 != null)
+		{
+			new_objId = repository.resolve(rev1 + "^{tree}");  
+			old_objId = repository.resolve(rev2 + "^{tree}");
+		}
+		else
+		{
+			new_objId = repository.resolve(Constants.HEAD);
+			RevWalk rw = new RevWalk(repository);
+			RevCommit rev = rw.parseCommit(new_objId);
+			RevCommit parRev = rev.getParent(0);
+			
+			old_objId = repository.resolve(parRev.getName());
+		}
+		
 		oldTreeIter.reset(reader, old_objId);  
 		CanonicalTreeParser newTreeIter = new CanonicalTreeParser();  
-		newTreeIter.reset(reader, new_objId2);  
+		newTreeIter.reset(reader, new_objId);  
 		
 		List<DiffEntry> diffs = null;
 		if (filePath != null)
@@ -340,7 +354,7 @@ public class GitService
 		}
 		
 		del(new File((String)rstMap.get("dirStr")));
-	}
+	}*/
 	
 	//某个文件指定版本的内容
     public static ByteArrayOutputStream getContent(Repository repository, String gitRoot, String revision, String filePath) throws Exception

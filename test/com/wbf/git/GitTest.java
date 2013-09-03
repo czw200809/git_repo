@@ -51,7 +51,8 @@ public class GitTest extends TestCase
 		String rev2 = "e46efed680788edaa472b31da2896d37c2ec60eb";//
 		String filePath = "test/com/wbf/git/GitTest.java";
 		String branchName = "b1";
-		GitService.getDiff(gitRoot, branchName, rev1, rev2, filePath);
+		GitService.getDiff(gitRoot, branchName, filePath);
+		//GitService.getDiff(gitRoot);
 	}
 	
 }
