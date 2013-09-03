@@ -23,7 +23,6 @@ public class Demo {
 				System.out.println("checked out branch " + f.getName()
 						+ ". HEAD: " + r.getRepository().getRef("HEAD"));
 			}
-			
 			// try to checkout branches by specifying abbreviated names
 			r.checkout().setName("master").call();
 			r.checkout().setName("origin/test").call();
