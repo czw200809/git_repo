@@ -3,8 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/Users/username/Desktop/Git的Java开发包/org.eclipse.jgit-3.0.0.201306101825-r.jar"/>
-	<classpathentry kind="lib" path="C:/Users/username/Desktop/Git的Java开发包/jsch-0.1.44.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="lib" path="F:/装机必备/jsch-0.1.42.jar"/>
+	<classpathentry kind="lib" path="F:/装机必备/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="F:/装机必备/org.eclipse.jgit-3.0.0.201306101825-r.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

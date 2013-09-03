@@ -12,7 +12,7 @@ public class GitTest extends TestCase
 	public void testGetLog() throws Exception
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
-		String branchName = "b1";
+		String branchName = "master";
 		String filePath = "src/Demo.java";
 		
 		GitService.getLog(gitRoot, branchName, filePath);
@@ -42,5 +42,10 @@ public class GitTest extends TestCase
 		String untilRev = "a028a72966e72fa45976ebccae1a166af3c77094";//30 last one
 		
 		GitService.getLog(gitRoot, branchName, startRev, untilRev, null);
+	}
+	
+	public void testPrint() throws Exception
+	{
+		GitService.print();
 	}
 }

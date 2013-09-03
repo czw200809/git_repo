@@ -31,6 +31,7 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -51,6 +52,55 @@ public class GitService
 	private final static String HEAD = "HEAD";
     private final static String REF_REMOTES = "refs/remotes/origin/";  
 	
+    
+    public static void print() throws Exception
+    {
+    	String dir = "tmp" + System.currentTimeMillis();
+		String str = System.getProperty("java.io.tmpdir");
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"), dir);
+		
+		tmpDir.mkdirs();
+		
+		try {
+			Git git = Git.cloneRepository().setBare(true).setBranch("master").setDirectory(tmpDir).setURI(
+					"D:/MyEclipse_Space/git_project/.git")
+					.setProgressMonitor(new TextProgressMonitor()).call();
+	        
+	        Repository repo = git.getRepository();
+	        ObjectId objId = repo.resolve("master");
+	        
+	        Iterable<RevCommit> revCommits = revCommits = git.log().add(objId).call();
+	       
+	        if (revCommits != null)
+	        {
+	        	RevCommit revCommit = null;
+	        	for (Iterator<RevCommit> iter = revCommits.iterator(); iter.hasNext();)
+	        	{
+	        		revCommit = iter.next();
+	        		System.out.println(revCommit.getFullMessage());
+	        	}
+	        }
+
+		} finally {
+			
+			del(tmpDir);
+		}
+    }
+    
+    public static void del(File file)
+	{
+		if (file.isDirectory())
+		{
+			File[] files = file.listFiles();
+			for (int i = 0; i < files.length; i++)
+			{
+				del(files[i]);
+			}
+		}
+		
+		file.delete();
+	}
+    
     //获取指定分支(且指定目录)的所有log
     public static List<GitLogDto> getLog(String gitRoot, String branchName, String filePath) throws Exception
     {
@@ -176,61 +226,6 @@ public class GitService
         
 		return logDtoList;
 	}*/
-	
-	//获取指定版本的log信息/指定File且指定版本的log
-	public static GitLogDto getSpecificLog(String gitRoot, String revision, String filePath) throws Exception
-	{
-		File rootDir = new File(gitRoot);  
-		
-        if (new File(gitRoot + File.separator + GIT).exists() == false) {  
-            Git.init().setDirectory(rootDir).call();  
-        }  
-        
-        Git git = Git.open(rootDir);
-        Repository repo = git.getRepository();
-        ObjectId objId = null;
-        if (revision != null)
-        	objId = repo.resolve(revision);
-        else
-        	objId = repo.resolve(HEAD);
-        Iterable<RevCommit> revCommits = null;
-        if (filePath == null)
-        	revCommits = git.log().add(objId).call();
-        else
-        	revCommits = git.log().addPath(filePath).add(objId).call();
-        
-        GitLogDto logDto = null;
-        for (RevCommit commit : revCommits)
-    	{
-    		logDto = new GitLogDto(commit);
-    		break;//否则会取出parent的log
-    	}
-        
-        return logDto;
-	}
-	
-	//获取指定文件的所有log
-	public static List<GitLogDto> getLogDtoList(String gitRoot, String filePath) throws Exception
-    {
-    	List<GitLogDto> rstDtoList = new ArrayList<GitLogDto>();
-    	
-    	File rootDir = new File(gitRoot);  
-		
-        Repository repo = new FileRepository(rootDir);
-        repo.getConfig().load();
-        
-        Git git = Git.open(rootDir);
-        Iterable<RevCommit> revCommits = git.log().addPath(filePath).call();;
-        
-        GitLogDto logDto = null;
-        for (RevCommit commit : revCommits)
-    	{
-    		logDto = new GitLogDto(commit);
-    		rstDtoList.add(logDto);
-    	}
-    	
-    	return rstDtoList;
-    }
 	
 	//获取版本之间的变更:包含某个目录的变更或具体某个文件的变更信息，具体根据filePath来确定
 	public static List<GitDiffStatusDto> getChanges(String gitRoot, String startRevision, String untilRevision, String filePath) throws Exception
@@ -800,7 +795,7 @@ public class GitService
 		for (int i = 0; i < pathList.size(); i++)
 		{
 			//获取某个文件或目录的所有版本log,其中idx == 0的是最新提交版本
-			logDtoList = getLogDtoList(gitRoot, pathList.get(i));
+			//logDtoList = getLogDtoList(gitRoot, pathList.get(i));
 		}
 		
 		return pathList;
