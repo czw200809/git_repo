@@ -16,6 +16,7 @@ public class GitTest extends TestCase
 		String filePath = "src/Demo.java";
 		
 		GitService.getLog(gitRoot, branchName, filePath);
+		
 	}
 	
 	public void testGetLog1() throws Exception
