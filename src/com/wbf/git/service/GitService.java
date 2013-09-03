@@ -9,6 +9,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.transport.URIish;
 
 import com.wbf.git.dto.GitLogDto;
 
@@ -18,6 +19,7 @@ public class GitService
 	private final static String HEAD = "HEAD";
     private final static String REF_REMOTES = "refs/remotes/origin/";
     
+    //某个时间段内的log信息
     public static List<GitLogDto> getLog(String gitRoot, String branchName, String startRev, String untilRev) throws Exception
     {
     	Git git = getGit(gitRoot);
@@ -28,7 +30,7 @@ public class GitService
     	 Ref ref = repository.getRef(branchName);
          ObjectId branchObjId = ref.getObjectId();
          
-         Iterable<RevCommit> revCommits = git.log().add(branchObjId).call();
+         Iterable<RevCommit> revCommits = git.log().add(branchObjId).addRange(startObjId, null).call();
          
          GitLogDto logDto = null;
          List<GitLogDto> logDtoList = new ArrayList<GitLogDto>();
@@ -51,6 +53,11 @@ public class GitService
     	 
     	Git git = Git.open(rootDir);
     	return git;
+    }
+    
+    public static void openRemoteRepo(String gitRoot) throws Exception 
+    {
+    	
     }
     
 }
