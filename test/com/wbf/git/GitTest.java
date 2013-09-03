@@ -47,10 +47,11 @@ public class GitTest extends TestCase
 	public void testGetDiff() throws Exception
 	{
 		String gitRoot = "D:\\Eclipse_Workspace\\git_project";
-		String rev1 = "14b1288ba91de192bc9187ea9485f0040ae58569";//ss_b1
-		String rev2 = "e46efed680788edaa472b31da2896d37c2ec60eb";//head
+		String rev1 = "f08aaae06dae27ccebc1421984c9a42ae65f3e5e";//HEAD
+		String rev2 = "e46efed680788edaa472b31da2896d37c2ec60eb";//
 		String filePath = "test/com/wbf/git/GitTest.java";
-		GitService.getDiff(gitRoot, rev1, rev2, filePath);
+		String branchName = "b1";
+		GitService.getDiff(gitRoot, branchName, rev1, rev2, filePath);
 	}
 	
 }
