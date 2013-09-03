@@ -12,9 +12,10 @@ public class GitTest extends TestCase
 	public void testGetLog() throws Exception
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
-		String branchName = "master";
-	
-		GitService.getLog(gitRoot, branchName);
+		String branchName = "b1";
+		String filePath = "src/Demo.java";
+		
+		GitService.getLog(gitRoot, branchName, filePath);
 	}
 	
 	public void testGetLog1() throws Exception
@@ -28,7 +29,7 @@ public class GitTest extends TestCase
 		System.out.println(startDate.getTime());
 		Date untilDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2013-08-31 00:00:00");
 		System.out.println(untilDate.getTime());
-		GitService.getLog(gitRoot, branchName, startDate, untilDate);
+		GitService.getLog(gitRoot, branchName, startDate, untilDate, null);
 
 	}
 	
@@ -40,6 +41,6 @@ public class GitTest extends TestCase
 		String startRev = "e94806ad2dc17b475acf76ab72b17fe44b2db80e";//second commit
 		String untilRev = "a028a72966e72fa45976ebccae1a166af3c77094";//30 last one
 		
-		GitService.getLog(gitRoot, branchName, startRev, untilRev);
+		GitService.getLog(gitRoot, branchName, startRev, untilRev, null);
 	}
 }
