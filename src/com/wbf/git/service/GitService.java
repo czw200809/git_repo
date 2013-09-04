@@ -221,21 +221,21 @@ public class GitService
 	}
     
 	//获取版本之间的变更:包含某个目录的变更或具体某个文件的变更信息，具体根据filePath来确定
-	public static List<GitDiffStatusDto> getChanges(String gitRoot, String startRevision, String untilRevision, String filePath) throws Exception
+	public static List<GitDiffStatusDto> getChanges(String gitRoot, String branchName, String rev1, String rev2, String filePath) throws Exception
 	{	
-		File rootDir = new File(gitRoot);  
-        if (new File(gitRoot + File.separator + GIT).exists() == false) {  
-            Git.init().setDirectory(rootDir).call();  
-        }  
-        
-        Git git = Git.open(rootDir);
+		Map<String, Object> rstMap = getGit(gitRoot, branchName);
+        Git git = (Git)rstMap.get("git");
         Repository repository = git.getRepository();
         
         ObjectReader reader = repository.newObjectReader();  
 		CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();  
 
-		ObjectId old = repository.resolve(startRevision + "^{tree}");  
-		ObjectId head = repository.resolve(untilRevision+"^{tree}");  
+		/*ObjectId old = repository.resolve(rev1 + "^{tree}");  
+		ObjectId head = repository.resolve(rev2+"^{tree}");*/
+		//ObjectId old = repository.resolve(HEAD + "^{tree}");
+		ObjectId old = repository.resolve(HEAD + "^{tree}");
+		ObjectId head = repository.resolve(HEAD + "^^{tree}");
+		//ObjectId head = repository.resolve(rev2+"^{tree}");
 		oldTreeIter.reset(reader, old);  
 		CanonicalTreeParser newTreeIter = new CanonicalTreeParser();  
 		newTreeIter.reset(reader, head);  
@@ -249,25 +249,26 @@ public class GitService
 						.call();
 		}
 		
-		DiffEntry diff = null;
 		GitDiffStatusDto diffStatusDto = null;
 		List<GitDiffStatusDto> rstList = null;
 		if (diffs != null && diffs.size() > 0)
 		{	
 			rstList = new ArrayList<GitDiffStatusDto>();
-			for (int i = 0; i < diffs.size(); i++)
+			for (Iterator<DiffEntry> iter = diffs.iterator(); iter.hasNext();)
 			{
-				diff = diffs.get(i);
-				
-				
-				
-				if (diff != null)
-				{
-					diffStatusDto = new GitDiffStatusDto(diff, gitRoot);
-					rstList.add(diffStatusDto);
-				}
+				ByteArrayOutputStream out = new ByteArrayOutputStream();  
+			    DiffFormatter df = new DiffFormatter(out);  
+			    df.setRepository(repository);  
+			    df.format(iter.next());
+			    String diffText = out.toString("gb2312");
+			    System.out.println(diffText);
+			    
+				diffStatusDto = new GitDiffStatusDto(iter.next(), gitRoot);
+				rstList.add(diffStatusDto);
 			}
 		}
+		
+		 del(new File((String)rstMap.get("dirStr")));
 		
 		return rstList;
 	}
@@ -539,7 +540,7 @@ public class GitService
 				}
 				else if (file.isHidden())
 				{
-					entryDto.kind = GitDiffStatusDto.GIT_KIND_HIDDEN;
+					entryDto.kind = GitDiffStatusDto.GIT_KIND_NONE;
 				}
 				else
 				{

@@ -14,14 +14,14 @@ public class GitDiffStatusDto
     
     public final static int GIT_KIND_FILE = 6;
     public final static int GIT_KIND_DIR = 7;
-	public final static int GIT_KIND_HIDDEN = 8;
+	public final static int GIT_KIND_NONE = 8;
 	public final static int GIT_KIND_UNKNOWN = 9;
     
-    public int modificationType; //the diff status enum
-    public int kind;	//file kind
-    public boolean propertiesModified; //if the property modified
-    public String path; //the relative path (ex. dir/fiel.txt,not the name)
-    public String url; //the url
+    public int modificationType;
+    public int kind;
+    public boolean propertiesModified;
+    public String path;
+    public String url;
     
     public GitDiffStatusDto()
     {
@@ -32,28 +32,41 @@ public class GitDiffStatusDto
     {
     	if (entry != null)
     	{
-    		ChangeType changeType = entry.getChangeType();
-    		FileMode fileMode = entry.getNewMode();
-    		switch(changeType){
-    			case ADD : 
-    				modificationType = 1;
-    					break;
-    			case COPY : 
-    				modificationType = 2;
-						break;
-    			case DELETE : 
-    				modificationType = 3;
-						break;
-    			case MODIFY : 
-    				modificationType = 4;
-						break;
-    			case RENAME : 
-    				modificationType = 5;
-						break;
-				default : 
-						break;
-    		}
+    		if (entry.getChangeType().name().equals("ADD"))
+    			modificationType = 1;
+    		else if (entry.getChangeType().name().equals("COPY"))
+    			modificationType = 2;
+    		else if (entry.getChangeType().name().equals("DELETE"))
+    			modificationType = 3;
+    		else if (entry.getChangeType().name().equals("MODIFY"))
+    			modificationType = 4;
+    		else//RENAME
+    			modificationType = 5;
     		
+    		int bits = entry.getNewMode().getBits();
+    		FileMode mode = entry.getNewMode();
+    		
+    		switch (bits & mode.TYPE_MASK)
+			{
+			    case 0:
+			        if (bits == 0)
+			        {
+			            kind = GIT_KIND_NONE;
+			        }
+			        break;
+			
+			    case 16384:
+			    	
+			    	kind = GIT_KIND_DIR;
+			    	break;
+			
+			    case 32768:
+			        kind = GIT_KIND_FILE;
+			        break;
+			    default:
+			    	kind = GIT_KIND_UNKNOWN;
+			    	break;
+			}
     		
     		path = entry.getNewPath();
     		url = gitRoot + "/" + path;
