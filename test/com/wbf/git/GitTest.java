@@ -67,4 +67,13 @@ public class GitTest extends TestCase
 		GitService.getChanges(gitRoot, branchName, rev1, rev2, filePath);
 	}
 	
+	public void testGetContent() throws Exception
+	{
+		String gitRoot = "D:/MyEclipse_Space/git_project";
+		String filePath = "test/com/wbf/git/GitTest.java";
+		String branchName = "b1";
+		
+		GitService.getContent(gitRoot, branchName, null, filePath);
+	}
+	
 }
