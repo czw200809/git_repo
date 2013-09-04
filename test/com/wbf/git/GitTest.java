@@ -62,7 +62,7 @@ public class GitTest extends TestCase
 		String rev1 = "14b1288ba91de192bc9187ea9485f0040ae58569";//hhhhhh_b1
 		String rev2 = "023049012bbca6650bf5f49723792562c73ad0e8";//ss_b1
 		String filePath = "test/com/wbf/git/GitTest.java";
-		String branchName = "b1";
+		String branchName = "b1";//aaa
 		
 		GitService.getChanges(gitRoot, branchName, rev1, rev2, filePath);
 	}
