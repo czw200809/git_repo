@@ -82,7 +82,7 @@ public class GitTest extends TestCase
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
 		String filePath = "src";
-		String branchName = "b1";
+		String branchName = "master";
 		String revision = "8390295535b0eeb002e5f84ede9b2d960bc5d66b";
 		
 		GitService.listDirEntry(gitRoot, branchName, revision, filePath);

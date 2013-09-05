@@ -118,7 +118,7 @@ public class GitService
     }
     
     //获取指定分支在某个时间段内的log
-    public static List<GitLogDto> getLog(Map<String, Object> rstMap, String gitRoot, String branchName, Date startDate, Date untilDate, String filePath) throws Exception
+    public static List<GitLogDto> getLog(Map<String, Object> rstMap, boolean isAll, String gitRoot, String branchName, Date startDate, Date untilDate, String filePath) throws Exception
     {
         List<GitLogDto> logDtoList = getLog(rstMap, gitRoot, branchName, filePath);
         
@@ -129,17 +129,21 @@ public class GitService
         	long time = d.getTime();
         	long startTime = startDate.getTime();
         	long untilTime = untilDate.getTime();
-        	if (time < startTime && time > untilTime)
+        	if (!isAll)
         	{
-        		iter.remove();
+        		if (time < startTime && time > untilTime)
+            	{
+            		iter.remove();
+            	}
         	}
+        	
         }
         
     	return logDtoList;
     }
     
     //获取指定分支在startRev-untilRev之间的版本
-    public static List<GitLogDto> getLog(Map<String, Object> rstMap, String gitRoot, String branchName, String startRev, String untilRev, String filePath) throws Exception
+    public static List<GitLogDto> getLog(Map<String, Object> rstMap, boolean isAll, String gitRoot, String branchName, String startRev, String untilRev, String filePath) throws Exception
     {
     	boolean isNew = false;
     	if (rstMap == null)
@@ -160,7 +164,7 @@ public class GitService
         Date startDate = rev1.getCommitterIdent().getWhen();
         Date untilDate = rev2.getCommitterIdent().getWhen();
         
-        logDtoList = getLog(rstMap, gitRoot, branchName, startDate, untilDate, filePath);
+        logDtoList = getLog(rstMap, isAll, gitRoot, branchName, startDate, untilDate, filePath);
         
         if (isNew)
         	del(new File((String)rstMap.get("dirStr")));
@@ -259,10 +263,11 @@ public class GitService
 		List<DiffEntry> diffs = null;
 		if (filePath != null)
 		{
-			diffs = git.diff().setPathFilter(PathFilter.create(filePath))
-						.setNewTree(newTreeIter)  
-						.setOldTree(oldTreeIter)  
-						.call();
+			diffs = git.diff()
+					    .setPathFilter(PathFilter.create(filePath))
+					   .setNewTree(newTreeIter)  
+					   .setOldTree(oldTreeIter)  
+					   .call();
 		}
 		
 		GitDiffStatusDto diffStatusDto = null;
@@ -274,12 +279,12 @@ public class GitService
 			for (Iterator<DiffEntry> iter = diffs.iterator(); iter.hasNext();)
 			{
 				diff = iter.next();
-				ByteArrayOutputStream out = new ByteArrayOutputStream();  
+				/*ByteArrayOutputStream out = new ByteArrayOutputStream();  
 			    DiffFormatter df = new DiffFormatter(out);  
 			    df.setRepository(repository);  
 			    df.format(diff);
 			    String diffText = out.toString("gb2312");
-			    System.out.println(diffText);
+			    System.out.println(diffText);*/
 			    
 				diffStatusDto = new GitDiffStatusDto(diff, gitRoot);
 				rstList.add(diffStatusDto);
@@ -363,7 +368,7 @@ public class GitService
             while (treeWalk.next())
             {	
             	pathList.add(treeWalk.getPathString());
-            	System.out.println(treeWalk.getNameString() + ", " + treeWalk.getPathString());            	
+            	//System.out.println(treeWalk.getNameString() + ", " + treeWalk.getPathString());            	
             }
             
             String path = null;
@@ -429,11 +434,13 @@ public class GitService
     			else
     				name = filePath.substring(filePath.lastIndexOf("/") + 1);
     			
-    			diffDtoList = getChanges(rstMap, gitRoot, null, revision, null, filePath);
+    			boolean isAll = true;
     			ObjectId objId = repo.resolve(revision);
             	RevCommit rev1 = rw.parseCommit(objId);
             	RevCommit rev2 = rw.parseCommit(rev1.getParent(0).getId());
-            	logDtoList = getLog(rstMap, gitRoot, null, revision, rev2.getName(), filePath);
+            	logDtoList = getLog(rstMap, isAll, gitRoot, null, revision, rev2.getName(), filePath);
+            	
+            	diffDtoList = getChanges(rstMap, gitRoot, null, revision, null, filePath);
     			
             	entryDto = new GitDirEntryDto();
             	entryDto.name = name;
