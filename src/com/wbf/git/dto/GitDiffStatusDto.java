@@ -19,9 +19,11 @@ public class GitDiffStatusDto
     
     public int modificationType;
     public int kind;
-    public boolean propertiesModified;
-    public String path;
+    //public boolean propertiesModified;
+    public int size;
+	public String path;
     public String url;
+    public String repoRoot;
     
     public GitDiffStatusDto()
     {
@@ -56,12 +58,12 @@ public class GitDiffStatusDto
 			        break;
 			
 			    case 16384:
-			    	
 			    	kind = GIT_KIND_DIR;
 			    	break;
 			
 			    case 32768:
 			        kind = GIT_KIND_FILE;
+			        size = mode.copyToLength();
 			        break;
 			    default:
 			    	kind = GIT_KIND_UNKNOWN;
@@ -69,6 +71,7 @@ public class GitDiffStatusDto
 			}
     		
     		path = entry.getNewPath();
+    		repoRoot = gitRoot;
     		url = gitRoot + "/" + path;
     	}
     }
@@ -85,12 +88,27 @@ public class GitDiffStatusDto
 	public void setKind(int kind) {
 		this.kind = kind;
 	}
-	public boolean isPropertiesModified() {
+	/*public boolean isPropertiesModified() {
 		return propertiesModified;
 	}
 	public void setPropertiesModified(boolean propertiesModified) {
 		this.propertiesModified = propertiesModified;
+	}*/
+	public int getSize() {
+		return size;
 	}
+	
+	public void setSize(int size) {
+		this.size = size;
+	}
+	public String getRepoRoot() {
+		return repoRoot;
+	}
+
+	public void setRepoRoot(String repoRoot) {
+		this.repoRoot = repoRoot;
+	}
+
 	public String getPath() {
 		return path;
 	}

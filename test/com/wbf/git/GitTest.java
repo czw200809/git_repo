@@ -15,7 +15,7 @@ public class GitTest extends TestCase
 		String branchName = "master";
 		String filePath = "src/Demo.java";
 		
-		GitService.getLog(gitRoot, branchName, filePath);
+		GitService.getLog(null, gitRoot, branchName, filePath);
 	}
 	
 	public void testGetLog1() throws Exception
@@ -29,7 +29,7 @@ public class GitTest extends TestCase
 		System.out.println(startDate.getTime());
 		Date untilDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2013-08-31 00:00:00");
 		System.out.println(untilDate.getTime());
-		GitService.getLog(gitRoot, branchName, startDate, untilDate, null);
+		GitService.getLog(null, gitRoot, branchName, startDate, untilDate, null);
 
 	}
 	
@@ -41,7 +41,7 @@ public class GitTest extends TestCase
 		String startRev = "e94806ad2dc17b475acf76ab72b17fe44b2db80e";//second commit
 		String untilRev = "a028a72966e72fa45976ebccae1a166af3c77094";//30 last one
 		
-		GitService.getLog(gitRoot, branchName, startRev, untilRev, null);
+		GitService.getLog(null, gitRoot, branchName, startRev, untilRev, null);
 	}
 	
 	public void testGetDiff() throws Exception
@@ -64,16 +64,28 @@ public class GitTest extends TestCase
 		String filePath = "test/com/wbf/git/GitTest.java";
 		String branchName = "b1";//aaa
 		
-		GitService.getChanges(gitRoot, branchName, rev1, rev2, filePath);
+		GitService.getChanges(null, gitRoot, branchName, rev1, rev2, filePath);
 	}
 	
 	public void testGetContent() throws Exception
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
 		String filePath = "test/com/wbf/git/GitTest.java";
-		String branchName = "b1";
+		String branchName = "master";
+		String revision = "a25bf5509f0882d471a3af12cce9e60cabed4d2c";
 		
-		GitService.getContent(gitRoot, branchName, null, filePath);
+		GitService.getContent(gitRoot, branchName, revision, filePath);
+		//GitService.getContent(gitRoot, branchName, null, filePath);
+	}
+	
+	public void testListDirEntry() throws Exception
+	{
+		String gitRoot = "D:/MyEclipse_Space/git_project";
+		String filePath = "src";
+		String branchName = "master";
+		String revision = "a25bf5509f0882d471a3af12cce9e60cabed4d2c";
+		
+		GitService.listDirEntry(gitRoot, branchName, revision, filePath);
 	}
 	
 }
