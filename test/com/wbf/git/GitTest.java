@@ -9,10 +9,10 @@ import junit.framework.TestCase;
 
 public class GitTest extends TestCase
 {	
-	public void testGetLog() throws Exception
+	/*public void testGetLog() throws Exception
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
-		String branchName = "master";
+		String branchName = "b1";
 		String filePath = "src/Demo.java";
 		
 		GitService.getLog(null, gitRoot, branchName, filePath);
@@ -76,14 +76,14 @@ public class GitTest extends TestCase
 		
 		GitService.getContent(gitRoot, branchName, revision, filePath);
 		//GitService.getContent(gitRoot, branchName, null, filePath);
-	}
+	}*/
 	
 	public void testListDirEntry() throws Exception
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
 		String filePath = "src";
-		String branchName = "master";
-		String revision = "a25bf5509f0882d471a3af12cce9e60cabed4d2c";
+		String branchName = "b1";
+		String revision = "8390295535b0eeb002e5f84ede9b2d960bc5d66b";
 		
 		GitService.listDirEntry(gitRoot, branchName, revision, filePath);
 	}

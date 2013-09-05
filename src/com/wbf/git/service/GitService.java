@@ -86,16 +86,18 @@ public class GitService
     		rstMap = getGit(gitRoot, branchName);
     	}
         Git git = (Git)rstMap.get("git");
-        Repository repo = git.getRepository();
+        //Repository repo = git.getRepository();
         
         List<GitLogDto> logDtoList = null;
-        ObjectId objId = repo.resolve(branchName);
+        //ObjectId objId = repo.resolve(branchName);
         
         Iterable<RevCommit> revCommits = null;
         if (filePath == null)
-        	revCommits = git.log().add(objId).call();
+        	//revCommits = git.log().add(objId).call();
+        	revCommits = git.log().call();
         else
-        	revCommits = git.log().addPath(filePath).add(objId).call();
+        	//revCommits = git.log().addPath(filePath).add(objId).call();
+        	revCommits = git.log().addPath(filePath).call();
         if (revCommits != null)
         {
         	logDtoList = new ArrayList<GitLogDto>();
@@ -125,7 +127,9 @@ public class GitService
         	GitLogDto logDto = iter.next();
         	Date d = logDto.commitDate;
         	long time = d.getTime();
-        	if (time < startDate.getTime() || time > untilDate.getTime())
+        	long startTime = startDate.getTime();
+        	long untilTime = untilDate.getTime();
+        	if (time < startTime && time > untilTime)
         	{
         		iter.remove();
         	}
@@ -392,7 +396,7 @@ public class GitService
             		dirList.add(dir);
             }
             
-            rstDtoList = listDirEntry(rstMap, branchName, revision, dirList);
+            rstDtoList = listDirEntry(rstMap, gitRoot, branchName, revision, dirList);
 		}
         
         del(new File((String)rstMap.get("dirStr")));
@@ -400,7 +404,7 @@ public class GitService
         return rstDtoList;
     }
     
-    private static List<GitDirEntryDto> listDirEntry(Map<String, Object> rstMap, String branchName, String revision, List<String> dirList) throws Exception
+    private static List<GitDirEntryDto> listDirEntry(Map<String, Object> rstMap, String gitRoot, String branchName, String revision, List<String> dirList) throws Exception
     {
     	List<GitDirEntryDto> rstDtoList = null;
     	GitDirEntryDto entryDto = null;
@@ -425,11 +429,11 @@ public class GitService
     			else
     				name = filePath.substring(filePath.lastIndexOf("/") + 1);
     			
-    			diffDtoList = getChanges(rstMap, null, null, revision, null, filePath);
+    			diffDtoList = getChanges(rstMap, gitRoot, null, revision, null, filePath);
     			ObjectId objId = repo.resolve(revision);
             	RevCommit rev1 = rw.parseCommit(objId);
             	RevCommit rev2 = rw.parseCommit(rev1.getParent(0).getId());
-            	logDtoList = getLog(rstMap, null, null, revision, rev2.getName(), filePath);
+            	logDtoList = getLog(rstMap, gitRoot, null, revision, rev2.getName(), filePath);
     			
             	entryDto = new GitDirEntryDto();
             	entryDto.name = name;
@@ -444,7 +448,8 @@ public class GitService
             	}
             	
             	if (logDtoList != null && logDtoList.size() > 0)
-            	{
+            	{	
+            		logDto = logDtoList.get(0);
             		entryDto.commitAuthor = logDto.author;
         			entryDto.commitDate = logDto.commitDate;
         			entryDto.commitMessage = logDto.commitMessage;
