@@ -18,7 +18,7 @@ public class Demo {
 			Git r = Git.cloneRepository().setBare(true).setBranch("master").setDirectory(tmpDir).setURI(
 					"git@github.com:czw200809/git_repo.git")
 					.setProgressMonitor(new TextProgressMonitor()).call();
-			r.checkout().setName("origin/master").call();
+			/*r.checkout().setName("origin/master").call();
 			for (Ref f : r.branchList().setListMode(ListMode.ALL).call()) {
 				r.checkout().setName(f.getName()).call();
 				System.out.println("checked out branch " + f.getName()
@@ -33,7 +33,8 @@ public class Demo {
 				System.err.println("couldn't checkout 'test'. Got exception: "
 						+ e.toString() + ". HEAD: "
 						+ r.getRepository().getRef("HEAD"));
-			}
+			}*/
+			r.getRepository().close();
 		} finally {
 			rm(tmpDir);
 		}

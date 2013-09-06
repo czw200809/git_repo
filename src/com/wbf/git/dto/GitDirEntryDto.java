@@ -4,18 +4,16 @@ import java.util.Date;
 
 public class GitDirEntryDto {
 
-	public String name;             //filename
-    public int kind;         //file or dir
-    public long size;               //for dir, size is 0
-    //public boolean hasProperties;   //not include svn: properties
-    public String commitRevision;     //last modified revision
-    public Date commitDate;        //last modified date/time
-    public String commitAuthor;       //last modify's author
-    public String commitMessage;    //last modify's commit message.
+	public String name;
+    public int kind;
+    public long size;
+    public String commitRevision;
+    public Date commitDate;
+    public String commitAuthor;
+    public String commitMessage;
     public String relativePath;
-	//public SvnLockDto lock;         //the lock info
-    public String url;              //the url 
-    public String repositoryRoot;    //the root url, not server, it's repository root url.
+    public String url; 
+    public String repositoryRoot;
     
     public String getRelativePath() {
 		return relativePath;

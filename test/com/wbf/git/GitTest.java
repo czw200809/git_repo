@@ -9,13 +9,14 @@ import junit.framework.TestCase;
 
 public class GitTest extends TestCase
 {	
-	/*public void testGetLog() throws Exception
+	/*
+	public void testGetLog() throws Exception
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
-		String branchName = "b1";
+		String branchName = "master";
 		String filePath = "src/Demo.java";
 		
-		GitService.getLog(null, gitRoot, branchName, filePath);
+		GitService.getLog(gitRoot, branchName, filePath);
 	}
 	
 	public void testGetLog1() throws Exception
@@ -76,16 +77,32 @@ public class GitTest extends TestCase
 		
 		GitService.getContent(gitRoot, branchName, revision, filePath);
 		//GitService.getContent(gitRoot, branchName, null, filePath);
-	}*/
+	}
 	
-	public void testListDirEntry() throws Exception
+	public void testGetContent() throws Exception
 	{
 		String gitRoot = "D:/MyEclipse_Space/git_project";
-		String filePath = "src";
+		String filePath = "test/com/wbf/git/GitTest.java";
 		String branchName = "master";
-		String revision = "8390295535b0eeb002e5f84ede9b2d960bc5d66b";
+		String revision = "a25bf5509f0882d471a3af12cce9e60cabed4d2c";
 		
-		GitService.listDirEntry(gitRoot, branchName, revision, filePath);
+		GitService.getContent(gitRoot, branchName, revision, filePath);
+		//GitService.getContent(gitRoot, branchName, null, filePath);
+	}
+	*/
+	public void testListDirEntry() throws Exception
+	{
+		//String gitRoot = "D:/MyEclipse_Space/git_project";
+		
+		//String gitRoot = "git@github.com:czw200809/git_repo.git";
+		String gitRoot = "https://github.com/czw200809/git_repo.git";
+		String filePath = "src/com";
+		String branchName = "b1";
+		//String revision = "8390295535b0eeb002e5f84ede9b2d960bc5d66b";
+		String revision = "beddeb7c25766ffb4d3cb0e58ea91610854f0690";
+		
+		GitService.listDirEntry(gitRoot, branchName, null, null);
+		//GitService.listDirEntry(gitRoot, branchName, revision, filePath);
 	}
 	
 }

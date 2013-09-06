@@ -19,8 +19,6 @@ public class GitDiffStatusDto
     
     public int modificationType;
     public int kind;
-    //public boolean propertiesModified;
-    public int size;
 	public String path;
     public String url;
     public String repoRoot;
@@ -45,35 +43,40 @@ public class GitDiffStatusDto
     		else//RENAME
     			modificationType = 5;
     		
-    		int bits = entry.getNewMode().getBits();
-    		FileMode mode = entry.getNewMode();
-    		
-    		switch (bits & mode.TYPE_MASK)
-			{
-			    case 0:
-			        if (bits == 0)
-			        {
-			            kind = GIT_KIND_NONE;
-			        }
-			        break;
-			
-			    case 16384:
-			    	kind = GIT_KIND_DIR;
-			    	break;
-			
-			    case 32768:
-			        kind = GIT_KIND_FILE;
-			        size = mode.copyToLength();
-			        break;
-			    default:
-			    	kind = GIT_KIND_UNKNOWN;
-			    	break;
-			}
-    		
+    		kind = getKind(entry.getNewMode());
     		path = entry.getNewPath();
     		repoRoot = gitRoot;
     		url = gitRoot + "/" + path;
     	}
+    }
+    
+    public static int getKind(FileMode mode) {
+    	
+    	int bits = mode.getBits();
+		int kind = -1;
+    	
+		switch (bits & mode.TYPE_MASK)
+		{
+		    case 0:
+		        if (bits == 0)
+		        {
+		            kind = GIT_KIND_NONE;
+		        }
+		        break;
+		
+		    case 16384:
+		    	kind = GIT_KIND_DIR;
+		    	break;
+		
+		    case 32768:
+		        kind = GIT_KIND_FILE;
+		        break;
+		    default:
+		    	kind = GIT_KIND_UNKNOWN;
+		    	break;
+		}
+		
+		return kind;
     }
     
 	public int getModificationType() {
@@ -88,27 +91,12 @@ public class GitDiffStatusDto
 	public void setKind(int kind) {
 		this.kind = kind;
 	}
-	/*public boolean isPropertiesModified() {
-		return propertiesModified;
-	}
-	public void setPropertiesModified(boolean propertiesModified) {
-		this.propertiesModified = propertiesModified;
-	}*/
-	public int getSize() {
-		return size;
-	}
-	
-	public void setSize(int size) {
-		this.size = size;
-	}
 	public String getRepoRoot() {
 		return repoRoot;
 	}
-
 	public void setRepoRoot(String repoRoot) {
 		this.repoRoot = repoRoot;
 	}
-
 	public String getPath() {
 		return path;
 	}
