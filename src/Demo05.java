@@ -13,32 +13,25 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 
-public class Demo04 {
+public class Demo05 {
 
 	public static void main(String[] args) throws Exception 
 	{
-		//String url = "D:/MyEclipse_Space/git_project/.git";
-		//https://github.com/czw200809/git_repo.git
-		String url = "https://github.com/czw200809/git_repo.git";
-		File tmpDir = new File(System.getProperty("java.io.tmpdir"), "tmp"
-				+ System.currentTimeMillis());
+		String url = "D:/MyEclipse_Space/git_project/.git";
 		
-		tmpDir.mkdirs();
 		Repository repository = null;
 		try {
 			
-			Git git = Git.cloneRepository().setBare(true).setBranch("master").setDirectory(tmpDir).setURI(
-					"git@github.com:czw200809/git_repo.git")
-					.setProgressMonitor(new TextProgressMonitor()).call();
+			Git git = Git.open(new File(url));
 			
 			repository = git.getRepository();
+			ObjectId objId = repository.resolve("8a81d0841b70cc11054cd53bde5d07f36bc46c35");
 			//Ref head = repository.getRef("HEAD");
 
 			RevWalk walk = new RevWalk(repository);
-			
-			ObjectId objId = repository.resolve("afb3add42ddead3e40847ecad06d533a96076c58");
-			RevCommit commit = walk.parseCommit(objId);
+
 			//RevCommit commit = walk.parseCommit(head.getObjectId());
+			RevCommit commit = walk.parseCommit(objId);
 			RevTree tree = commit.getTree();
 			System.out.println("Having tree: " + tree);
 			
@@ -63,7 +56,7 @@ public class Demo04 {
 			if (repository != null)
 			{
 				repository.close();
-				rm(tmpDir);
+				//rm(tmpDir);
 			}
 		}
 	}
