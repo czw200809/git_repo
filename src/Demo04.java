@@ -36,7 +36,7 @@ public class Demo04 {
 
 			RevWalk walk = new RevWalk(repository);
 			
-			ObjectId objId = repository.resolve("afb3add42ddead3e40847ecad06d533a96076c58");
+			ObjectId objId = repository.resolve("9b78b310ed0d2be654b8d08710e589c3bbbd0633");
 			RevCommit commit = walk.parseCommit(objId);
 			//RevCommit commit = walk.parseCommit(head.getObjectId());
 			RevTree tree = commit.getTree();
@@ -44,7 +44,7 @@ public class Demo04 {
 			
 			//TreeWalk treeWalk = TreeWalk.forPath(repository, "src", tree);
 			TreeWalk treeWalk = new TreeWalk(repository);
-			treeWalk.setFilter(PathFilter.create("src"));
+			//treeWalk.setFilter(PathFilter.create("src"));
 			treeWalk.addTree(tree);
 			//treeWalk.setRecursive(true);
 			
