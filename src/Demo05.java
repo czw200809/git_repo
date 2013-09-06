@@ -25,7 +25,7 @@ public class Demo05 {
 			Git git = Git.open(new File(url));
 			
 			repository = git.getRepository();
-			ObjectId objId = repository.resolve("8a81d0841b70cc11054cd53bde5d07f36bc46c35");
+			ObjectId objId = repository.resolve("71bf8e04e015a40a90f4964e11a3c47f81303ba4");
 			//Ref head = repository.getRef("HEAD");
 
 			RevWalk walk = new RevWalk(repository);
