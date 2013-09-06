@@ -99,7 +99,7 @@ public class GitTest extends TestCase
 		String filePath = "src/com";
 		String branchName = "b1";
 		//String revision = "8390295535b0eeb002e5f84ede9b2d960bc5d66b";
-		String revision = "beddeb7c25766ffb4d3cb0e58ea91610854f0690";
+		String revision = "953f2a44c6c7c880f27c36f78fc997ed7627c4ec";
 		
 		GitService.listDirEntry(gitRoot, branchName, null, null);
 		//GitService.listDirEntry(gitRoot, branchName, revision, filePath);

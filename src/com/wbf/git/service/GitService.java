@@ -23,7 +23,6 @@ import org.eclipse.jgit.lib.FileMode;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -391,54 +390,6 @@ public class GitService
     
     public static List<GitDirEntryDto> listDirEntry(String gitRoot, String branchName, String revision, String filePath) throws Exception
     {
-    	//
-    	List<GitDirEntryDto> rstDtoList = null;
-    	Map<String, Object> rstMap = getGit(gitRoot, branchName);
-    	
-    	Git git = null;
-    	Repository repository = null;
-    	if (rstMap != null)
-    	{
-    		git = (Git)rstMap.get("git");
-    		if (git != null)
-    		{
-    			repository = git.getRepository();
-    		}
-    	}
-    	
-    	ObjectId head = repository.resolve(revision);
-    	//Ref head = repository.getRef(revision);
-		RevWalk walk = new RevWalk(repository);
-		//RevCommit commit = walk.parseCommit(head.getObjectId());
-		RevCommit commit = walk.parseCommit(head);
-		RevTree tree = commit.getTree();
-		TreeWalk treeWalk = new TreeWalk(repository);
-		if (filePath != null)
-		{			
-			treeWalk.setFilter(PathFilter.create(filePath));
-		}
-		treeWalk.addTree(tree);
-		//treeWalk.setRecursive(true);
-		
-		while(treeWalk.next()) {
-			
-		    System.out.println("Folder Path: " + treeWalk.getPathString());
-		    System.out.println("Folder Name: " + treeWalk.getNameString());
-		    //System.out.println("Folder depth: " + treeWalk.getDepth());
-		    //System.out.println("Folder Tree Count: " + treeWalk.getTreeCount());
-		    System.out.println("-----------------------------------------");
-		    treeWalk.enterSubtree();
-		}
-		
-		repository.close();
-		del(new File((String)rstMap.get("dirStr")));
-		
-    	return rstDtoList;
-    }
-    
-    
-   /* public static List<GitDirEntryDto> listDirEntry(String gitRoot, String branchName, String revision, String filePath) throws Exception
-    {
     	Map<String, Object> rstMap = getGit(gitRoot, branchName);
     	
     	Git git = null;
@@ -589,7 +540,7 @@ public class GitService
     	}
     	
     	return rstDtoList;
-    }*/
+    }
     
 	/** 
      * 获取上一版本的变更记录，如果是新增的文件，不会显示，因为做回滚时不需要回滚新增的文件 
