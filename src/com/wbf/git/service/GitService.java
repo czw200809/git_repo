@@ -404,7 +404,11 @@ public class GitService
     	}
         
         List<GitDirEntryDto> rstDtoList = null;
-        ObjectId objId = repository.resolve(revision);
+        ObjectId objId = null;
+        if (revision == null)
+        	objId = repository.resolve(Constants.HEAD);
+        else
+        	objId = repository.resolve(revision);
 
 		RevWalk walk = new RevWalk(repository);
 
@@ -412,7 +416,8 @@ public class GitService
 		RevTree tree = commit.getTree();
 		
 		TreeWalk treeWalk = new TreeWalk(repository);
-		treeWalk.setFilter(PathFilter.create(filePath));
+		if (filePath != null)
+			treeWalk.setFilter(PathFilter.create(filePath));
 		treeWalk.addTree(tree);
 		//treeWalk.setRecursive(true);
 		
@@ -423,18 +428,26 @@ public class GitService
 		while(treeWalk.next()) 
 		{	
 			path = treeWalk.getPathString();
-			if (count > 0 && (path.indexOf(filePath) != -1))
-			{
-				if (!path.equals(filePath))
+			if (filePath != null)
+			{				
+				if (count > 0 && (path.indexOf(filePath) != -1))
 				{
-					nameList.add(treeWalk.getNameString());
-					pathList.add(treeWalk.getPathString());
+					if (!path.equals(filePath))
+					{
+						nameList.add(treeWalk.getNameString());
+						pathList.add(treeWalk.getPathString());
+					}
 				}
+				
+				if (count <= 0 || path.indexOf(filePath) == -1 || path.equals(filePath))
+					treeWalk.enterSubtree();
+				count++;
 			}
-			
-		    if (count <= 0 || path.indexOf(filePath) == -1 || path.equals(filePath))
-		    	treeWalk.enterSubtree();
-		    count++;
+			else
+			{
+				nameList.add(treeWalk.getNameString());
+				pathList.add(treeWalk.getPathString());
+			}
 		}
 		
 		rstDtoList = listDirEntry(rstMap, gitRoot, branchName, revision, pathList, nameList);
