@@ -1,7 +1,10 @@
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -18,14 +21,17 @@ public class Demo05 {
 	public static void main(String[] args) throws Exception 
 	{
 		String url = "D:/MyEclipse_Space/git_project/.git";
+		String filePath = "src/com/wbf/git/dto";
 		
 		Repository repository = null;
+		List<String> pathList = new ArrayList<String>();
+		List<String> nameList = new ArrayList<String>();
 		try {
 			
 			Git git = Git.open(new File(url));
 			
 			repository = git.getRepository();
-			ObjectId objId = repository.resolve("71bf8e04e015a40a90f4964e11a3c47f81303ba4");
+			ObjectId objId = repository.resolve(Constants.HEAD);
 			//Ref head = repository.getRef("HEAD");
 
 			RevWalk walk = new RevWalk(repository);
@@ -33,21 +39,32 @@ public class Demo05 {
 			//RevCommit commit = walk.parseCommit(head.getObjectId());
 			RevCommit commit = walk.parseCommit(objId);
 			RevTree tree = commit.getTree();
-			System.out.println("Having tree: " + tree);
+			//System.out.println("Having tree: " + tree);
 			
-			//TreeWalk treeWalk = TreeWalk.forPath(repository, "src", tree);
 			TreeWalk treeWalk = new TreeWalk(repository);
-			treeWalk.setFilter(PathFilter.create("src"));
+			treeWalk.setFilter(PathFilter.create(filePath));
 			treeWalk.addTree(tree);
 			//treeWalk.setRecursive(true);
 			
+			int count = 0;
+			String path = null;
 			while(treeWalk.next()) {
+				
+				path = treeWalk.getPathString();
+				if (count > 0 && (path.indexOf(filePath) != -1))
+				{
+					if (!path.equals(filePath))
+					{
+						nameList.add(treeWalk.getNameString());
+						pathList.add(treeWalk.getPathString());
+					}
+				}
 			    System.out.println("Folder Path: " + treeWalk.getPathString());
 			    System.out.println("Folder Name: " + treeWalk.getNameString());
-			    //System.out.println("Folder depth: " + treeWalk.getDepth());
-			    //System.out.println("Folder Tree Count: " + treeWalk.getTreeCount());
 			    System.out.println("-----------------------------------------");
-			    treeWalk.enterSubtree();
+			    if (count <= 0 || path.indexOf(filePath) == -1 || path.equals(filePath))
+			    	treeWalk.enterSubtree();
+			    count++;
 			}
 			
 		}catch(Exception e) {
