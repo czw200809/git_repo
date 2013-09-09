@@ -36,7 +36,7 @@ public class Demo04 {
 
 			RevWalk walk = new RevWalk(repository);
 			
-			ObjectId objId = repository.resolve("9b78b310ed0d2be654b8d08710e589c3bbbd0633");
+			ObjectId objId = repository.resolve("65d40ec92f2d231b7eca6b59fb37ef169e4c3c92");
 			RevCommit commit = walk.parseCommit(objId);
 			//RevCommit commit = walk.parseCommit(head.getObjectId());
 			RevTree tree = commit.getTree();
@@ -48,13 +48,17 @@ public class Demo04 {
 			treeWalk.addTree(tree);
 			//treeWalk.setRecursive(true);
 			
-			while(treeWalk.next()) {
+			if(treeWalk.next()) {
 			    System.out.println("Folder Path: " + treeWalk.getPathString());
 			    System.out.println("Folder Name: " + treeWalk.getNameString());
 			    //System.out.println("Folder depth: " + treeWalk.getDepth());
 			    //System.out.println("Folder Tree Count: " + treeWalk.getTreeCount());
 			    System.out.println("-----------------------------------------");
-			    treeWalk.enterSubtree();
+			    //treeWalk.enterSubtree();
+			}
+			else
+			{
+				treeWalk.enterSubtree();
 			}
 			
 		}catch(Exception e) {
