@@ -393,6 +393,135 @@ public class GitService
     	Map<String, Object> rstMap = getGit(gitRoot, branchName);
     	
     	Git git = null;
+    	Repository repository = null;
+    	if (rstMap != null)
+    	{
+    		git = (Git)rstMap.get("git");
+    		if (git != null)
+    		{
+    			repository = git.getRepository();
+    		}
+    	}
+        
+        List<GitDirEntryDto> rstDtoList = null;
+        ObjectId objId = repository.resolve(revision);
+
+		RevWalk walk = new RevWalk(repository);
+
+		RevCommit commit = walk.parseCommit(objId);
+		RevTree tree = commit.getTree();
+		
+		TreeWalk treeWalk = new TreeWalk(repository);
+		treeWalk.setFilter(PathFilter.create(filePath));
+		treeWalk.addTree(tree);
+		//treeWalk.setRecursive(true);
+		
+		int count = 0;
+		String path = null;
+		List<String> pathList = new ArrayList<String>();
+		List<String> nameList = new ArrayList<String>();
+		while(treeWalk.next()) 
+		{	
+			path = treeWalk.getPathString();
+			if (count > 0 && (path.indexOf(filePath) != -1))
+			{
+				if (!path.equals(filePath))
+				{
+					nameList.add(treeWalk.getNameString());
+					pathList.add(treeWalk.getPathString());
+				}
+			}
+			
+		    if (count <= 0 || path.indexOf(filePath) == -1 || path.equals(filePath))
+		    	treeWalk.enterSubtree();
+		    count++;
+		}
+		
+		rstDtoList = listDirEntry(rstMap, gitRoot, branchName, revision, pathList, nameList);
+        
+		if (repository != null)
+		{
+			repository.close();
+			del(new File((String)rstMap.get("dirStr")));
+		}
+		
+        return rstDtoList;
+    }
+    
+    private static List<GitDirEntryDto> listDirEntry(Map<String, Object> rstMap, String gitRoot, String branchName, String revision, List<String> pathList, List<String> nameList) throws Exception
+    {
+    	List<GitDirEntryDto> rstDtoList = null;
+    	GitDirEntryDto entryDto = null;
+    	GitLogDto logDto = null;
+    	
+    	Repository repo = ((Git)rstMap.get("git")).getRepository();
+    	RevWalk rw = new RevWalk(repo);
+    	
+    	String filePath = null;
+    	List<GitLogDto> logDtoList = null;
+    	if (pathList != null)
+    	{
+    		rstDtoList = new ArrayList<GitDirEntryDto>();
+    		for (int i = 0; i < pathList.size(); i++)
+    		{
+    			filePath = pathList.get(i);
+    			
+    			ObjectId objId = null; 
+    			if (revision == null)
+    				objId = repo.resolve(Constants.HEAD);
+    			else
+    				objId = repo.resolve(revision);
+    			
+            	RevCommit rev = rw.parseCommit(objId);
+            	logDtoList = getLog(rstMap, gitRoot, branchName, filePath);
+            	
+            	for (Iterator<GitLogDto> it = logDtoList.iterator(); it.hasNext();)
+            	{
+            		GitLogDto dto = it.next();
+            		if (dto.commitDate.getTime() > rev.getCommitterIdent().getWhen().getTime())
+            		{
+            			it.remove();
+            		}
+            	}
+            	
+            	entryDto = new GitDirEntryDto();
+            	entryDto.name = nameList.get(i);
+            	entryDto.url = gitRoot + "/" + filePath;
+        		entryDto.repositoryRoot = gitRoot;
+        		entryDto.relativePath = filePath;
+            	if (logDtoList != null && logDtoList.size() > 0)
+            	{	
+            		logDto = logDtoList.get(0);
+            		entryDto.commitAuthor = logDto.author;
+        			entryDto.commitDate = logDto.commitDate;
+        			entryDto.commitMessage = logDto.commitMessage;
+        			entryDto.commitRevision = logDto.revision;
+            	}
+            	
+            	//如果这个File只有第一次提交，那么是没有parentRev的
+            	Map<String, Object> fileMap = new HashMap<String, Object>();
+        		fileMap.put("fileType", -1);
+        		byte[] bytes = getContent(rstMap, null, null, revision, filePath, fileMap);
+        		if (bytes != null)
+        		{
+        			int kind = (Integer)fileMap.get("fileType");
+        			entryDto.kind = kind;
+        			if (kind == 6)
+        				entryDto.size = bytes.length;
+        		}
+            	
+    			rstDtoList.add(entryDto);
+    		}
+    	}
+    	
+    	return rstDtoList;
+    }
+    
+   /* public static List<GitDirEntryDto> listDirEntry(String gitRoot, String branchName, String revision, String filePath) throws Exception
+    {
+    	Map<String, Object> rstMap = getGit(gitRoot, branchName);
+    	
+    	Git git = null;
     	Repository repo = null;
     	if (rstMap != null)
     	{
@@ -540,7 +669,7 @@ public class GitService
     	}
     	
     	return rstDtoList;
-    }
+    }*/
     
 	/** 
      * 获取上一版本的变更记录，如果是新增的文件，不会显示，因为做回滚时不需要回滚新增的文件 

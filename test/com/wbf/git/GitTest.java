@@ -92,10 +92,10 @@ public class GitTest extends TestCase
 	*/
 	public void testListDirEntry() throws Exception
 	{
-		//String gitRoot = "D:/MyEclipse_Space/git_project";
+		String gitRoot = "D:/MyEclipse_Space/git_project";
 		
 		//String gitRoot = "git@github.com:czw200809/git_repo.git";
-		String gitRoot = "https://github.com/czw200809/git_repo.git";
+		//String gitRoot = "https://github.com/czw200809/git_repo.git";
 		String filePath = "src/com";
 		String branchName = "b1";
 		//String revision = "8390295535b0eeb002e5f84ede9b2d960bc5d66b";

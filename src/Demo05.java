@@ -21,7 +21,7 @@ public class Demo05 {
 	public static void main(String[] args) throws Exception 
 	{
 		String url = "D:/MyEclipse_Space/git_project/.git";
-		String filePath = "src/com/wbf/git/dto";
+		String filePath = "src";
 		
 		Repository repository = null;
 		List<String> pathList = new ArrayList<String>();
@@ -31,7 +31,8 @@ public class Demo05 {
 			Git git = Git.open(new File(url));
 			
 			repository = git.getRepository();
-			ObjectId objId = repository.resolve(Constants.HEAD);
+			//ObjectId objId = repository.resolve(Constants.HEAD);
+			ObjectId objId = repository.resolve("afb3add42ddead3e40847ecad06d533a96076c58");
 			//Ref head = repository.getRef("HEAD");
 
 			RevWalk walk = new RevWalk(repository);
