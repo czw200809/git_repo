@@ -2,7 +2,6 @@ package com.wbf.git.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,9 +12,6 @@ import java.util.Map;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
@@ -339,7 +335,7 @@ public class GitService
         		if (filePath != null)
         		{
         			diffs = git.diff()
-        					    .setPathFilter(PathFilter.create(filePath))
+        					   .setPathFilter(PathFilter.create(filePath))
         					   .setNewTree(newTreeIter)  
         					   .setOldTree(oldTreeIter)  
         					   .call();

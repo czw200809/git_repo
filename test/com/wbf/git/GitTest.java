@@ -95,6 +95,7 @@ public class GitTest extends TestCase
 		//String gitRoot = "D:/MyEclipse_Space/git_project";
 		
 		String gitRoot = "git@github.com:czw200809/git_repo.git";
+		
 		//String gitRoot = "https://github.com/czw200809/git_repo.git";
 		String filePath = "src/com/wbf/git";
 		String branchName = "b1";
